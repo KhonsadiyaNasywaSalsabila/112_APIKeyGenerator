@@ -1,5 +1,6 @@
 const express = require('express')
 const path = require('path')
+const crypto = require('crypto')
 const app = express()
 const port = 3000
 
@@ -33,6 +34,13 @@ async function checkDbConnection() {
 }
 checkDbConnection(); // Jalankan pengecekan koneksi
 
+// --- TIDAK DIGUNAKAN LAGI ---
+// Variabel ini tidak lagi diperlukan karena kita menyimpan di DB
+// let latestApiKey = null; 
+
+// Middleware untuk mengurai body request dalam format JSON
+app.use(express.json()); 
+
 // 1. Middleware untuk menyajikan file statis dari folder 'public'
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -40,6 +48,37 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'))
 })
+
+// 3. Handler untuk permintaan POST '/create'
+// --- DIMODIFIKASI: Menjadi async dan menyimpan ke DB ---
+app.post('/create', async (req, res) => { // <-- tambahkan 'async'
+    try {
+        const randomBytes = crypto.randomBytes(32);
+        const keyHex = randomBytes.toString('hex');
+        const newApiKey = 'umy_sk_' + keyHex;
+
+        // --- SIMPAN API KEY KE DATABASE ---
+        // Ganti 'latestApiKey = newApiKey;' dengan ini:
+        const sql = "INSERT INTO api_keys (api_key) VALUES (?)";
+        await pool.execute(sql, [newApiKey]);
+        
+        console.log(`API Key baru dibuat dan disimpan ke DB: ${newApiKey}`);
+
+        // Mengirim API Key kembali ke klien
+        res.json({
+            success: true,
+            apiKey: newApiKey
+        });
+
+    } catch (error) {
+        // Menangani error jika terjadi (misal: DB mati, key duplikat)
+        console.error('Error saat membuat API key:', error.message);
+        res.status(500).json({
+            success: false,
+            message: 'Gagal membuat API key di server.'
+        });
+    }
+});
 
 
 app.listen(port, () => {
