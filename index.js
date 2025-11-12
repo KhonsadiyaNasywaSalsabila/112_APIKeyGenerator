@@ -80,6 +80,47 @@ app.post('/create', async (req, res) => { // <-- tambahkan 'async'
     }
 });
 
+// 4. Handler untuk permintaan POST '/checkapi' (Validasi API Key)
+// --- DIMODIFIKASI: Menjadi async dan mengecek ke DB ---
+app.post('/checkapi', async (req, res) => { // <-- tambahkan 'async'
+    const clientKey = req.body.key;
+
+    if (!clientKey) {
+        return res.status(400).json({ 
+            success: false, 
+            message: 'API Key diperlukan di body request (key).' 
+        });
+    }
+
+    try {
+        // --- CEK API KEY KE DATABASE ---
+        // Ganti 'clientKey === latestApiKey' dengan ini:
+        const sql = "SELECT * FROM api_keys WHERE api_key = ?";
+        const [rows] = await pool.execute(sql, [clientKey]);
+
+        // 'rows' adalah array. Jika panjangnya > 0, berarti key ditemukan
+        if (rows.length > 0) {
+            res.json({
+                success: true,
+                message: 'API Key valid.'
+            });
+        } else {
+            res.status(401).json({ // 401 Unauthorized
+                success: false,
+                message: 'API Key tidak valid atau tidak ditemukan.'
+            });
+        }
+
+    } catch (error) {
+        // Menangani error jika terjadi (misal: DB mati)
+        console.error('Error saat memvalidasi API key:', error.message);
+        res.status(500).json({
+            success: false,
+            message: 'Gagal memvalidasi API key di server.'
+        });
+    }
+});
+
 
 app.listen(port, () => {
     console.log(`Server Express berjalan di http://localhost:${port}`)
