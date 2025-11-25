@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daftar User & API Key</title>
+    <style>
+        /* Import font dari Google */
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f0f4f8; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            color: #333;
+        }
+
+        .container {
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15); 
+            text-align: center;
+            width: 90%;
+            max-width: 420px; 
+        }
+
+        .logo {
+            width: 100px;
+            height: auto;
+            margin-bottom: 25px;
+            transition: transform 0.3s ease;
+        }
+        
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        h1 {
+            color: #006341; 
+            margin-top: 0;
+            margin-bottom: 30px;
+            font-weight: 700;
+            font-size: 26px;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            text-align: left;
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600; 
+            color: #555;
+            font-size: 14px;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="email"],
+        .form-group input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            font-size: 15px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+            outline: none;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .form-group input:focus {
+            border-color: #006341;
+            box-shadow: 0 0 5px rgba(0, 99, 65, 0.3); 
+        }
+
+        /* Tombol Simpan */
+        button[type="submit"], #save-btn {
+            width: 100%;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: 700;
+            background-color: #006341; 
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+            margin-top: 15px;
+            letter-spacing: 0.5px;
+        }
+
+        button[type="submit"]:hover, #save-btn:hover {
+            background-color: #004a30; 
+            transform: translateY(-2px); 
+            box-shadow: 0 4px 10px rgba(0, 99, 65, 0.4);
+        }
+
+        .link-group {
+            margin-top: 25px;
+            font-size: 14px;
+        }
+
+        .link-group a {
+            color: #006341;
+            font-weight: 600;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .link-group a:hover {
+            text-decoration: underline;
+            color: #004a30;
+        }
+        
+        /* Style Khusus untuk API Key Display */
+        #api-key-display {
+            background-color: #f7f7f7;
+            border: 1px dashed #006341; 
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 14px;
+            text-align: center;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        #message {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 4px;
+            font-weight: 600;
+            color: #006341;
+            border: 1px solid #d4edda;
+            background-color: #e9f7ef;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="logo-umy.png" alt="Logo UMY" class="logo">
+        <h1>Daftar User & Generate API Key</h1>
+        
+        <form id="user-register-form">
+            <div class="form-group">
+                <label for="first_name">Nama Depan</label>
+                <input type="text" id="first_name" required>
+            </div>
+            <div class="form-group">
+                <label for="last_name">Nama Belakang</label>
+                <input type="text" id="last_name" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="api-key-display">API Key Anda</label>
+                <input type="text" id="api-key-display" value="Key akan muncul di sini" readonly> 
+            </div>
+
+            <button type="submit" id="save-btn">Simpan Data User dan API Key</button>
+        </form>
+        
+        <p id="message"></p>
+        
+        <div class="link-group">
+            Untuk akses Admin, silakan <a href="/login">Login Admin</a>
+        </div>
+
+    </div>
+    
+    <script>
+        document.getElementById('user-register-form').addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const first_name = document.getElementById('first_name').value;
+            const last_name = document.getElementById('last_name').value;
+            const email = document.getElementById('email').value;
+            const saveBtn = document.getElementById('save-btn');
+            const messageElement = document.getElementById('message');
+
+            saveBtn.disabled = true;
+            saveBtn.textContent = 'Memproses...';
+            messageElement.textContent = 'Menyimpan...';
+            
+            try {
+                const response = await fetch('/user-register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ first_name, last_name, email })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    document.getElementById('api-key-display').value = data.apiKey;
+                    messageElement.innerHTML = `<strong>${data.message}!</strong>`;
+                    // Hanya reset form input data, biarkan key terlihat
+                    document.getElementById('first_name').value = '';
+                    document.getElementById('last_name').value = '';
+                    document.getElementById('email').value = '';
+                } else {
+                    messageElement.textContent = 'Gagal: ' + data.message;
+                    document.getElementById('api-key-display').value = 'ERROR';
+                }
+
+            } catch (error) {
+                console.error(error);
+                messageElement.textContent = 'Terjadi kesalahan saat menghubungi server.';
+                document.getElementById('api-key-display').value = 'ERROR';
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.textContent = 'Simpan Data User dan API Key';
+            }
+        });
+    </script>
+</body>
+</html>
