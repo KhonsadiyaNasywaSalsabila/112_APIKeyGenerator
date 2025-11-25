@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Register</title>
+    <style>
+        /* Import font dari Google */
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f0f4f8; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            color: #333;
+        }
+
+        .container {
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15); 
+            text-align: center;
+            width: 90%;
+            max-width: 420px; 
+        }
+
+        .logo {
+            width: 100px;
+            height: auto;
+            margin-bottom: 25px;
+            transition: transform 0.3s ease;
+        }
+        
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        h1 {
+            color: #006341; 
+            margin-top: 0;
+            margin-bottom: 30px;
+            font-weight: 700;
+            font-size: 26px;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            text-align: left;
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600; 
+            color: #555;
+            font-size: 14px;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="email"],
+        .form-group input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            font-size: 15px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+            outline: none;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .form-group input:focus {
+            border-color: #006341;
+            box-shadow: 0 0 5px rgba(0, 99, 65, 0.3); 
+        }
+
+        button[type="submit"] {
+            width: 100%;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: 700;
+            background-color: #006341; 
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+            margin-top: 15px;
+            letter-spacing: 0.5px;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #004a30; 
+            transform: translateY(-2px); 
+            box-shadow: 0 4px 10px rgba(0, 99, 65, 0.4);
+        }
+
+        .link-group {
+            margin-top: 25px;
+            font-size: 14px;
+        }
+
+        .link-group a {
+            color: #006341;
+            font-weight: 600;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .link-group a:hover {
+            text-decoration: underline;
+            color: #004a30;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="logo-umy.png" alt="Logo UMY" class="logo">
+        <h1>Admin Register</h1>
+        
+        <form action="/register" method="POST">
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button type="submit">Register</button>
+        </form>
+        
+        <div class="link-group">
+            Sudah punya akun? <a href="/login">Login di sini</a>
+        </div>
+    </div>
+</body>
+</html>
